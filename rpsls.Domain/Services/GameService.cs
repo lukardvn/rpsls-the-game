@@ -1,9 +1,10 @@
+using Microsoft.Extensions.Logging;
 using rpsls.Domain.Interfaces;
 using rpsls.Domain.Models;
 
 namespace rpsls.Domain.Services;
 
-public class GameService : IGameService
+public class GameService(ILogger<GameService> logger) : IGameService
 {
     private readonly Dictionary<Choice, Choice[]> _winningRules = new()
     {
