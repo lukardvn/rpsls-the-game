@@ -11,15 +11,24 @@ public class RandomNumberProvider(HttpClient httpClient, ILogger<RandomNumberPro
 
     public async Task<int> GetRandomNumber(CancellationToken ct = default)
     {
-        var response = await httpClient.GetFromJsonAsync<RandomNumberResponse>(BaseUrl, ct);
-
-        if (response is not null)
+        try
         {
-            logger.LogInformation("Received random number: {RandomNumber}", response.RandomNumber);
-            return response.RandomNumber;
+            var response = await httpClient.GetFromJsonAsync<RandomNumberResponse>(BaseUrl, ct);
+
+            if (response?.RandomNumber is >= 1 and <= 100)
+            {
+                logger.LogInformation("Received random number: {RandomNumber}", response.RandomNumber);
+                return response.RandomNumber;
+            }
+
+            logger.LogWarning("Received invalid or null random number from API. Falling back to local random generator.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception occurred while fetching random number. Falling back to local random generator.");
         }
 
-        logger.LogWarning("Received null response from random number API. Falling back to local random generator.");
-        return new Random().Next(1, 100);
+        return new Random().Next(1, 101);
     }
+
 }

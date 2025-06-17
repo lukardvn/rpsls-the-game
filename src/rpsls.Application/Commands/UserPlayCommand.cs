@@ -3,4 +3,4 @@ using rpsls.Application.DTOs;
 
 namespace rpsls.Application.Commands;
 
-public record UserPlayCommand(int Choice, string? Username) : ICommand<ResultDto>;
+public record UserPlayCommand(int Choice, string? Username) : ICommand<ResultWithTimeDto>;

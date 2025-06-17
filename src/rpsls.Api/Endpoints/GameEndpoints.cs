@@ -67,7 +67,7 @@ public static class GameEndpoints
         .Produces<IEnumerable<ResultWithTimeDto>>()
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
         
-        group.MapPost("/scoreboard/reset", async (IMediator mediator) =>
+        group.MapPost("/scoreboard/reset", async (ISender mediator) =>
         {
             await mediator.Send(new ResetScoreboardCommand());
             return Results.Ok("Scoreboard reset successfully.");

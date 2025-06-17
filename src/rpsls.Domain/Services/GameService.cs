@@ -17,6 +17,9 @@ public class GameService(ILogger<GameService> logger) : IGameService
     
     public Task<Choice> MapNumberToChoice(int number)
     {
+        if (number is < 1 or > 100)
+            throw new ArgumentOutOfRangeException(nameof(number), "Number must be between 1 and 100.");
+
         var choices = Enum.GetValues<Choice>();
         var bucketSize = 100 / choices.Length;
         var index = Math.Min((number - 1) / bucketSize, choices.Length - 1);
