@@ -1,9 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using rpsls.Api;
 using rpsls.Api.Endpoints;
 using rpsls.Api.Middlewares;
 using rpsls.Application;
 using rpsls.Domain;
 using rpsls.Infrastructure;
+using rpsls.Infrastructure.Database;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.RegisterGameEndpoints();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 
 app.Run();
 
