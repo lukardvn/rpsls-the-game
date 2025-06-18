@@ -6,17 +6,17 @@ using rpsls.Domain.Models;
 
 namespace rpsls.Application.Tests.Commands;
 
-public class UserPlayCommandHandlerTests
+public class PlayCommandHandlerTests
 {
     private readonly Mock<IGameService> _gameServiceMock = new();
     private readonly Mock<IRandomNumberProvider> _randomNumberProviderMock = new();
     private readonly Mock<IScoreboardRepository> _scoreboardRepoMock = new();
 
-    private readonly UserPlayCommandHandler _handler;
+    private readonly PlayCommandHandler _handler;
 
-    public UserPlayCommandHandlerTests()
+    public PlayCommandHandlerTests()
     {
-        _handler = new UserPlayCommandHandler(
+        _handler = new PlayCommandHandler(
             _gameServiceMock.Object,
             _randomNumberProviderMock.Object,
             _scoreboardRepoMock.Object
@@ -27,7 +27,7 @@ public class UserPlayCommandHandlerTests
     public async Task Handle_WhenUsernamePassedIn_ShouldSaveResultAndReturnDto()
     {
         // Arrange
-        var command = new UserPlayCommand((int)Choice.Rock, "TestUser");
+        var command = new PlayCommand((int)Choice.Rock, "TestUser");
         const int computerNumber = 2;
         const Choice computerChoice = Choice.Paper;
         const Outcome outcome = Outcome.Lose;
@@ -61,7 +61,7 @@ public class UserPlayCommandHandlerTests
     public async Task Handle_WhenUsernameNotPassedIn_ShouldNotSaveResult(string? username)
     {
         // Arrange
-        var command = new UserPlayCommand((int)Choice.Spock, username);
+        var command = new PlayCommand((int)Choice.Spock, username);
         const int computerNumber = 1;
         const Choice computerChoice = Choice.Lizard;
         const Outcome outcome = Outcome.Win;

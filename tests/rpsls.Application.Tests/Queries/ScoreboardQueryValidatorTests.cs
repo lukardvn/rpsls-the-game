@@ -13,7 +13,7 @@ public class ScoreboardQueryValidatorTests
     public void Validate_WhenValidCount_ShouldSucceed(int validCount)
     {
         // Arrange
-        var query = new ScoreboardQuery { Count = validCount };
+        var query = new ScoreboardQuery("user", validCount);
 
         // Act
         var result = _validator.Validate(query);
@@ -27,10 +27,10 @@ public class ScoreboardQueryValidatorTests
     [InlineData(0, "Count must be greater than 0")]
     [InlineData(-10, "Count must be greater than 0")]
     [InlineData(101, "Count cannot exceed 100")]
-    public void Validate_WhenInvalidCount_ShouldFail(int count, string expectedMessage)
+    public void Validate_WhenInvalidCount_ShouldFail(int invalidCount, string expectedMessage)
     {
         // Arrange
-        var query = new ScoreboardQuery { Count = count };
+        var query = new ScoreboardQuery("user", invalidCount);
 
         // Act
         var result = _validator.Validate(query);

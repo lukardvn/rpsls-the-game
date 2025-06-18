@@ -6,10 +6,10 @@ using rpsls.Domain.Models;
 
 namespace rpsls.Application.Commands;
 
-public class UserPlayCommandHandler(IGameService gameService, IRandomNumberProvider rnProvider, IScoreboardRepository scoreboardRepo)
-    : IRequestHandler<UserPlayCommand, ResultDto>
+public class PlayCommandHandler(IGameService gameService, IRandomNumberProvider rnProvider, IScoreboardRepository scoreboardRepo)
+    : IRequestHandler<PlayCommand, ResultDto>
 {
-    public async Task<ResultDto> Handle(UserPlayCommand request, CancellationToken ct)
+    public async Task<ResultDto> Handle(PlayCommand request, CancellationToken ct)
     {
         var playerChoice = (Choice)request.Choice;
 

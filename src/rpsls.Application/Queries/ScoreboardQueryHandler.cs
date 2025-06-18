@@ -10,7 +10,7 @@ public class ScoreboardQueryHandler(IScoreboardRepository scoreboardRepo, ITimeS
 {
     public async Task<IEnumerable<ResultWithTimeDto>> Handle(ScoreboardQuery request, CancellationToken ct)
     {
-        var dbResults=  await scoreboardRepo.GetRecentResults(request.Count, ct);
+        var dbResults=  await scoreboardRepo.GetRecentResults(request.Username, request.Count, ct);
         
         return dbResults.Select(r => r.ToResultWithTimeDto(timeService));
     }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using rpsls.Application.DTOs;
 using rpsls.Application.Interfaces;
 using rpsls.Domain.Models;
 using rpsls.Infrastructure.Database;
@@ -31,9 +32,10 @@ public class ScoreboardRepository(ApplicationDbContext dbContext) : IScoreboardR
         await dbContext.SaveChangesAsync(ct);
     }
 
-    public async Task<IEnumerable<GameResult>> GetRecentResults(int count = 10, CancellationToken ct = default)
+    public async Task<IEnumerable<GameResult>> GetRecentResults(string username, int count = 10, CancellationToken ct = default)
     {
         return await dbContext.Results
+            .Where(r => r.Username.ToLower().Equals(username.ToLower()))
             .OrderByDescending(r => r.PlayedAt)
             .Take(count)
             .ToListAsync(ct);
@@ -67,4 +69,35 @@ public class ScoreboardRepository(ApplicationDbContext dbContext) : IScoreboardR
         
         await dbContext.SaveChangesAsync(ct);
     }
+
+    public async Task<IEnumerable<LeaderboardEntryDto>> GetTopRatedPlayers(int count, CancellationToken ct = default)
+    {
+        var rawData = await dbContext.Results
+            .Where(r => !string.IsNullOrEmpty(r.Username))
+            .GroupBy(r => r.Username)
+            .Select(g => new
+            {
+                Username = g.Key,
+                Wins = g.Count(r => r.Outcome == Outcome.Win),
+                TotalGames = g.Count()
+            })
+            .ToListAsync(ct);
+
+        var leaderboard = rawData
+            .Select(x => new LeaderboardEntryDto(
+                x.Username,
+                x.Wins,
+                x.TotalGames,
+                x.TotalGames > 0
+                    ? Math.Round((double)x.Wins / x.TotalGames * 100, 2)
+                    : 0.0
+            ))
+            .OrderByDescending(x => x.Wins)
+            .ThenByDescending(x => x.WinRate)
+            .Take(count);
+
+        return leaderboard;
+    }
+
+
 }

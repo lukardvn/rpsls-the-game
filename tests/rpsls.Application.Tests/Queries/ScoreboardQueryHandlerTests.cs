@@ -22,13 +22,13 @@ public class ScoreboardQueryHandlerTests
         // Arrange
         var utcTime = new DateTime(2024, 6, 18, 10, 0, 0, DateTimeKind.Utc);
         var localTime = new DateTime(2024, 6, 18, 12, 0, 0); // Assume UTC+2
-        var query = new ScoreboardQuery { Count = 3 };
+        var query = new ScoreboardQuery("User1", 3);
         var mockResults = new List<GameResult>
         {
             new()
             {
                 Id = Guid.NewGuid(),
-                Username = "Alice",
+                Username = "User1",
                 PlayerChoice = Choice.Rock,
                 ComputerChoice = Choice.Scissors,
                 Outcome = Outcome.Win,
@@ -37,7 +37,7 @@ public class ScoreboardQueryHandlerTests
             new()
             {
                 Id = Guid.NewGuid(),
-                Username = "Bob",
+                Username = "User1",
                 PlayerChoice = Choice.Paper,
                 ComputerChoice = Choice.Rock,
                 Outcome = Outcome.Win,
@@ -46,7 +46,7 @@ public class ScoreboardQueryHandlerTests
         };
 
         _repoMock
-            .Setup(repo => repo.GetRecentResults(query.Count, It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetRecentResults("User1", query.Count, It.IsAny<CancellationToken>()))
             .ReturnsAsync(mockResults);
 
         _timeServiceMock
@@ -59,7 +59,7 @@ public class ScoreboardQueryHandlerTests
         // Assert
         var list = result.ToList();
         Assert.Equal(mockResults.Count, list.Count);
-        _repoMock.Verify(r => r.GetRecentResults(3, It.IsAny<CancellationToken>()), Times.Once);
+        _repoMock.Verify(r => r.GetRecentResults("User1", 3, It.IsAny<CancellationToken>()), Times.Once);
         _timeServiceMock.Verify(t => t.ConvertUtcToBelgradeTime(It.IsAny<DateTime>()), Times.Exactly(mockResults.Count));
     }
 }

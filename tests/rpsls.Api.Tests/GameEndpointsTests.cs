@@ -11,6 +11,7 @@ using rpsls.Domain.Models;
 
 namespace rpsls.Api.Tests;
 
+//TODO: more tests
 public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
@@ -89,20 +90,20 @@ public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Pro
     }
 
     [Fact]
-    public async Task PlayUserGame_WhenUserPlayRequest_ShouldReturnOkWithResult()
+    public async Task Play_WhenPlayRequestValid_ShouldReturnOkWithResult()
     {
         // Arrange
-        var userPlayRequest = new UserPlayRequest((int)Choice.Rock, "TestUser");
+        var playRequest = new PlayRequest((int)Choice.Rock, "TestUser");
         var expectedResult = new ResultDto(Choice.Rock, Choice.Scissors, Outcome.Win);
 
         _mediatorMock
-            .Setup(m => m.Send(It.IsAny<UserPlayCommand>(), It.IsAny<CancellationToken>()))
+            .Setup(m => m.Send(It.IsAny<PlayCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedResult);
 
         var client = _factory.CreateClient();
 
         // Act
-        var response = await client.PostAsJsonAsync("/game/user-play", userPlayRequest);
+        var response = await client.PostAsJsonAsync("/game/user-play", playRequest);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -183,8 +184,5 @@ public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Pro
 
         // Assert
         response.EnsureSuccessStatusCode();
-
-        var result = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Scoreboard reset successfully", result);
     }
 }

@@ -9,6 +9,6 @@ namespace rpsls.Api.Helpers;
 /// </summary>
 public static class Mappers
 {
-    public static UserPlayCommand ToPlayCommand(this UserPlayRequest request) =>
+    public static PlayCommand ToPlayCommand(this PlayRequest request) =>
         new(request.Choice, request.Username);
 }

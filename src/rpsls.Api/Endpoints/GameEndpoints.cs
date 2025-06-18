@@ -32,24 +32,27 @@ public static class GameEndpoints
         .WithName("GetRandomChoice")
         .Produces<ChoiceDto>();
         
-        group.MapPost("/user-play", async (UserPlayRequest request, ISender mediator, CancellationToken ct) =>
+        group.MapPost("/play", async (PlayRequest request, ISender mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(request.ToPlayCommand(), ct);
             return Results.Ok(result);
         })
         .WithDescription("Play a round against a computer opponent.")
         .WithName("PlayUserGame")
-        .Accepts<UserPlayRequest>("application/json")
+        .Accepts<PlayRequest>("application/json")
         .Produces<ResultDto>()
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
         
-        group.MapGet("/scoreboard", async (ISender mediator, [FromQuery]int count = 10, CancellationToken ct = default) =>
+        group.MapGet("/scoreboard", async (ISender mediator, [FromQuery]string username, [FromQuery]int count = 10, CancellationToken ct = default) =>
         {
-            var result = await mediator.Send(new ScoreboardQuery(count), ct);
+            if (string.IsNullOrWhiteSpace(username))
+                return Results.BadRequest("User parameter is required.");
+            
+            var result = await mediator.Send(new ScoreboardQuery(username, count), ct);
             return Results.Ok(result);
         })
-        .WithDescription("Get scoreboard of most recent results.")
+        .WithDescription("Get scoreboard of user's most recent results.")
         .WithName("GetScoreboard")
         .Produces<IEnumerable<ResultWithTimeDto>>()
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
@@ -64,9 +67,14 @@ public static class GameEndpoints
         .Produces(StatusCodes.Status204NoContent)
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
         
-        group.MapGet("/fail", () =>
+        group.MapGet("/leaderboard", async (ISender mediator, [FromQuery]int count = 3, CancellationToken ct = default) =>
         {
-            throw new InvalidOperationException("Something went wrong!");
-        });
+            var result = await mediator.Send(new LeaderboardQuery(count), ct);
+            return Results.Ok(result);
+        })
+        .WithDescription("Get leaderboard of the top rated players.")
+        .WithName("GetLeaderboard")
+        .Produces<IEnumerable<LeaderboardEntryDto>>()
+        .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
     }
 }

@@ -3,9 +3,9 @@ using rpsls.Application.Commands;
 
 namespace rpsls.Application.Tests.Commands;
 
-public class UserPlayCommandValidatorTests
+public class PlayCommandValidatorTests
 {
-    private readonly UserPlayCommandValidator _validator = new();
+    private readonly PlayCommandValidator _validator = new();
 
     [Theory]
     [InlineData(1)]
@@ -15,7 +15,7 @@ public class UserPlayCommandValidatorTests
     [InlineData(5)]
     public void Handle_WhenValidChoice_ShouldNotHaveValidationError(int validChoice)
     {
-        var command = new UserPlayCommand(validChoice, null);
+        var command = new PlayCommand(validChoice, null);
         var result = _validator.TestValidate(command);
         result.ShouldNotHaveValidationErrorFor(c => c.Choice);
     }
@@ -26,7 +26,7 @@ public class UserPlayCommandValidatorTests
     [InlineData(999)]
     public void Handle_WhenInvalidChoice_ShouldHaveValidationError(int invalidChoice)
     {
-        var command = new UserPlayCommand(invalidChoice, null);
+        var command = new PlayCommand(invalidChoice, null);
         var result = _validator.TestValidate(command);
         result.ShouldHaveValidationErrorFor(c => c.Choice)
             .WithErrorMessage($"Invalid player choice: {invalidChoice}");

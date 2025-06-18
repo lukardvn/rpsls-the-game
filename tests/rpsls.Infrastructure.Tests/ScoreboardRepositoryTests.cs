@@ -35,31 +35,44 @@ public class ScoreboardRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetRecentResults_ShouldReturnRecentRecords()
+    public async Task GetRecentResults_ShouldReturnRecentRecords_ForSpecificUser()
     {
         // Arrange
-        for (var i = 0; i <= 15; i++)
+        for (var i = 0; i < 5; i++)
         {
             _dbContext.Results.Add(new GameResult
             {
-                Username = $"user{i}",
+                Username = "user1",
                 PlayerChoice = Choice.Paper,
                 ComputerChoice = Choice.Rock,
                 Outcome = Outcome.Win,
                 PlayedAt = DateTime.UtcNow.AddSeconds(i)
             });
         }
+
+        for (var i = 0; i < 10; i++)
+        {
+            _dbContext.Results.Add(new GameResult
+            {
+                Username = $"user{i + 2}",
+                PlayerChoice = Choice.Scissors,
+                ComputerChoice = Choice.Paper,
+                Outcome = Outcome.Lose,
+                PlayedAt = DateTime.UtcNow.AddSeconds(i)
+            });
+        }
+
         await _dbContext.SaveChangesAsync();
 
         // Act
-        var recentResults = await _repository.GetRecentResults();
+        var recentResults = await _repository.GetRecentResults(username: "user1");
 
         // Assert
         var gameResults = recentResults as GameResult[] ?? recentResults.ToArray();
-        
-        Assert.Equal(10, gameResults.Count());
-        Assert.Equal("user15", gameResults.First().Username);
-        Assert.Equal("user6", gameResults.Last().Username);
+
+        Assert.All(gameResults, gr => Assert.Equal("user1", gr.Username));
+        Assert.Equal(5, gameResults.Length);
+        Assert.True(gameResults[0].PlayedAt >= gameResults[1].PlayedAt);
     }
 
     [Fact]
