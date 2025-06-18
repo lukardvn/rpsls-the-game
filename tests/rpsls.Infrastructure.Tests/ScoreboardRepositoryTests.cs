@@ -35,31 +35,19 @@ public class ScoreboardRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetRecentResults_ShouldReturnRecentRecords_ForSpecificUser()
+    public async Task GetRecentResults_ShouldReturnRecentRecordsForUser()
     {
         // Arrange
         for (var i = 0; i < 5; i++)
         {
-            _dbContext.Results.Add(new GameResult
-            {
-                Username = "user1",
-                PlayerChoice = Choice.Paper,
-                ComputerChoice = Choice.Rock,
-                Outcome = Outcome.Win,
-                PlayedAt = DateTime.UtcNow.AddSeconds(i)
-            });
+            _dbContext.Results.Add(new GameResult(Guid.NewGuid(), "user1", Choice.Paper, Choice.Rock, Outcome.Win,
+                DateTime.UtcNow.AddSeconds(i)));
         }
 
         for (var i = 0; i < 10; i++)
         {
-            _dbContext.Results.Add(new GameResult
-            {
-                Username = $"user{i + 2}",
-                PlayerChoice = Choice.Scissors,
-                ComputerChoice = Choice.Paper,
-                Outcome = Outcome.Lose,
-                PlayedAt = DateTime.UtcNow.AddSeconds(i)
-            });
+            _dbContext.Results.Add(new GameResult(Guid.NewGuid(), $"user{i + 2}", Choice.Scissors, Choice.Paper, Outcome.Lose,
+                DateTime.UtcNow.AddSeconds(i)));
         }
 
         await _dbContext.SaveChangesAsync();
@@ -76,17 +64,32 @@ public class ScoreboardRepositoryTests : IDisposable
     }
 
     [Fact]
+    public async Task GetRecentResults_ShouldRespectCountLimit()
+    {
+        for (var i = 0; i < 20; i++)
+        {
+            _dbContext.Results.Add(new GameResult(Guid.NewGuid(), "user1", Choice.Rock, Choice.Scissors, Outcome.Win, DateTime.UtcNow.AddMinutes(-i)));
+        }
+        await _dbContext.SaveChangesAsync();
+
+        var recentResults = await _repository.GetRecentResults("user1", count: 5);
+
+        Assert.Equal(5, recentResults.Count());
+    }
+
+    [Fact]
+    public async Task GetRecentResults_ShouldReturnEmpty_WhenUserDoesNotExist()
+    {
+        var results = await _repository.GetRecentResults("non-existing-user");
+
+        Assert.Empty(results);
+    }
+    
+    [Fact]
     public async Task ResetScoreboard_ShouldMoveResultsToArchiveAndRemoveFromResults()
     {
         // Arrange
-        _dbContext.Results.Add(new GameResult
-        {
-            Username = "userToArchive",
-            PlayerChoice = Choice.Spock,
-            ComputerChoice = Choice.Lizard,
-            Outcome = Outcome.Win,
-            PlayedAt = DateTime.UtcNow.AddHours(-1)
-        });
+        _dbContext.Results.Add(new GameResult(Guid.NewGuid(), "userToArchive", Choice.Spock, Choice.Lizard, Outcome.Win, DateTime.UtcNow.AddMinutes(-5)));
         await _dbContext.SaveChangesAsync();
 
         // Act
@@ -103,5 +106,51 @@ public class ScoreboardRepositoryTests : IDisposable
         Assert.Equal("userToArchive", archived.Username);
         Assert.Equal(Choice.Spock, archived.PlayerChoice);
         Assert.Equal(Outcome.Win, archived.Outcome);
+    }
+    
+    [Fact]
+    public async Task GetTopRatedPlayers_ShouldReturnSortedLeaderboard()
+    {
+        _dbContext.Results.AddRange(
+            new GameResult(Guid.NewGuid(), "user1", Choice.Rock, Choice.Scissors, Outcome.Win, DateTime.UtcNow),
+            new GameResult(Guid.NewGuid(), "user1", Choice.Paper, Choice.Rock, Outcome.Lose, DateTime.UtcNow),
+            new GameResult(Guid.NewGuid(), "user2", Choice.Scissors, Choice.Paper, Outcome.Win, DateTime.UtcNow),
+            new GameResult(Guid.NewGuid(), "user2", Choice.Lizard, Choice.Spock, Outcome.Win, DateTime.UtcNow)
+        );
+
+        await _dbContext.SaveChangesAsync();
+
+        var leaderboard = await _repository.GetTopRatedPlayers(5);
+        var entries = leaderboard.ToList();
+
+        Assert.Equal(2, entries.Count);
+        Assert.Equal("user2", entries[0].Username);
+        Assert.Equal(100.0, entries[0].WinRate);
+        Assert.Equal(50.0, entries[1].WinRate);
+    }
+
+    [Fact]
+    public async Task GetTopRatedPlayers_WhenNoResults_ShouldReturnEmpty()
+    {
+        var leaderboard = await _repository.GetTopRatedPlayers(10);
+        Assert.Empty(leaderboard);
+    }
+    [Fact]
+    public async Task GetTopRatedPlayers_ShouldCalculateZeroWinRate_WhenAllLosses()
+    {
+        _dbContext.Results.AddRange(
+            new GameResult(Guid.NewGuid(), "loser", Choice.Spock, Choice.Lizard, Outcome.Lose, DateTime.UtcNow),
+            new GameResult(Guid.NewGuid(), "loser", Choice.Paper, Choice.Rock, Outcome.Lose, DateTime.UtcNow)
+        );
+
+        await _dbContext.SaveChangesAsync();
+
+        var leaderboard = await _repository.GetTopRatedPlayers(5);
+        var entry = leaderboard.First();
+
+        Assert.Equal("loser", entry.Username);
+        Assert.Equal(0, entry.Wins);
+        Assert.Equal(2, entry.TotalGames);
+        Assert.Equal(0.0, entry.WinRate);
     }
 }

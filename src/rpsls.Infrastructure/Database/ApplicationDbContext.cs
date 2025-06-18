@@ -11,8 +11,20 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<GameResult>().ToTable("results");
-        modelBuilder.Entity<ArchivedGameResult>().ToTable("archived_results");
+        
+        modelBuilder.Entity<GameResult>(builder =>
+        {
+            builder.ToTable("results");
+            builder.HasKey(ar => ar.Id);
+            builder.Property(ar => ar.Id).ValueGeneratedOnAdd();
+        });        
+        
+        modelBuilder.Entity<ArchivedGameResult>(builder =>
+        {
+            builder.ToTable("archived_results");
+            builder.HasKey(ar => ar.Id);
+            builder.Property(ar => ar.Id) .ValueGeneratedOnAdd();
+        });
     }
 }
 

@@ -25,24 +25,8 @@ public class ScoreboardQueryHandlerTests
         var query = new ScoreboardQuery("User1", 3);
         var mockResults = new List<GameResult>
         {
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Username = "User1",
-                PlayerChoice = Choice.Rock,
-                ComputerChoice = Choice.Scissors,
-                Outcome = Outcome.Win,
-                PlayedAt = DateTime.Now
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Username = "User1",
-                PlayerChoice = Choice.Paper,
-                ComputerChoice = Choice.Rock,
-                Outcome = Outcome.Win,
-                PlayedAt = DateTime.Now.AddMinutes(-10)
-            }
+            new(Guid.NewGuid(), "User1", Choice.Rock, Choice.Scissors, Outcome.Win, DateTime.UtcNow),
+            new(Guid.NewGuid(), "User1", Choice.Paper, Choice.Rock, Outcome.Win, DateTime.UtcNow.AddMinutes(-10))
         };
 
         _repoMock

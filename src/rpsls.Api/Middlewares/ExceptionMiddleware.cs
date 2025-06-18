@@ -4,7 +4,7 @@ using rpsls.Application.Common.Exceptions;
 namespace rpsls.Api.Middlewares;
 
 /// <summary>
-/// Catches all exceptions and formats them as pretty HTTP error responses.
+/// Intercepts all the requests and catches exceptions. Formats them as pretty HTTP error responses.
 /// </summary>
 /// <param name="next"></param>
 /// <param name="logger"></param>

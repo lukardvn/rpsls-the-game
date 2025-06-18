@@ -10,7 +10,7 @@ public class ScoreboardRepository(ApplicationDbContext dbContext) : IScoreboardR
 {
     /// <summary>
     /// Adding result of the game to the database table.
-    /// Only when username was provided. Not saving results with no username.
+    /// Assumes username has already been validated (not null/empty) by the caller.
     /// </summary>
     /// <param name="username"></param>
     /// <param name="playerChoice"></param>
@@ -19,14 +19,14 @@ public class ScoreboardRepository(ApplicationDbContext dbContext) : IScoreboardR
     /// <param name="ct"></param>
     public async Task AddResult(string username, Choice playerChoice, Choice computerChoice, Outcome outcome, CancellationToken ct = default)
     {
-        var result = new GameResult
-        {
-            Username = username,
-            PlayerChoice = playerChoice,
-            ComputerChoice = computerChoice,
-            Outcome = outcome,
-            PlayedAt = DateTime.UtcNow
-        };
+        var result = new GameResult(
+            Guid.Empty, 
+            username, 
+            playerChoice, 
+            computerChoice, 
+            outcome, 
+            DateTime.UtcNow
+        );
         
         dbContext.Results.Add(result);
         await dbContext.SaveChangesAsync(ct);
@@ -54,22 +54,30 @@ public class ScoreboardRepository(ApplicationDbContext dbContext) : IScoreboardR
     {
         var resultsToArchive = await dbContext.Results.ToListAsync(ct);
 
-        var archivedResults = resultsToArchive.Select(r => new ArchivedGameResult
-        {
-            Username = r.Username,
-            PlayerChoice = r.PlayerChoice,
-            ComputerChoice = r.ComputerChoice,
-            Outcome = r.Outcome,
-            PlayedAt = r.PlayedAt,
-            ArchivedAt = DateTime.UtcNow
-        });
+        var archivedResults = resultsToArchive.Select(r =>
+            new ArchivedGameResult(
+                Guid.Empty, //EF generates the GUID                  
+                r.Username,
+                r.PlayerChoice,
+                r.ComputerChoice,
+                r.Outcome,
+                r.PlayedAt,
+                DateTime.UtcNow
+            )
+        );
         
         await dbContext.ArchivedResults.AddRangeAsync(archivedResults, ct);
         dbContext.Results.RemoveRange(resultsToArchive);
         
         await dbContext.SaveChangesAsync(ct);
     }
-
+    
+    /// <summary>
+    /// Retrieves the top-rated players based on their number of wins and win rate.
+    /// Players are ranked primarily by number of wins, and then by win rate if tied.
+    /// </summary>
+    /// <param name="count"></param>
+    /// <param name="ct"></param>
     public async Task<IEnumerable<LeaderboardEntryDto>> GetTopRatedPlayers(int count, CancellationToken ct = default)
     {
         var rawData = await dbContext.Results
@@ -98,6 +106,4 @@ public class ScoreboardRepository(ApplicationDbContext dbContext) : IScoreboardR
 
         return leaderboard;
     }
-
-
 }
