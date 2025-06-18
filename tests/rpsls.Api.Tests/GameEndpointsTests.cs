@@ -41,7 +41,10 @@ public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Pro
         var expectedChoices = new List<ChoiceDto>
         {
             new(1, "Rock"),
-            new(2, "Paper")
+            new(2, "Paper"),
+            new(3, "Scissors"),
+            new(4, "Lizard"),
+            new(5, "Spock"),
         };
 
         _mediatorMock

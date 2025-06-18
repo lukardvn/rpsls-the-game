@@ -18,9 +18,14 @@ public class ChoicesQueryHandlerTests
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        var expected = Enum.GetValues<Choice>()
-            .Select(c => new ChoiceDto((int)c, c.ToString()))
-            .ToList();
+        var expected = new List<ChoiceDto>
+        {
+            new(1, "Rock"),
+            new(2, "Paper"),
+            new(3, "Scissors"),
+            new(4, "Lizard"),
+            new(5, "Spock"),
+        };
 
         var choiceDtos = result as ChoiceDto[] ?? result.ToArray();
         Assert.Equal(expected.Count, choiceDtos.Length);

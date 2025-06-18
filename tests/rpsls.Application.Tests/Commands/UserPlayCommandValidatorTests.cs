@@ -13,7 +13,7 @@ public class UserPlayCommandValidatorTests
     [InlineData(3)]
     [InlineData(4)]
     [InlineData(5)]
-    public void Should_Not_Have_Validation_Error_For_Valid_Choice(int validChoice)
+    public void Handle_WhenValidChoice_ShouldNotHaveValidationError(int validChoice)
     {
         var command = new UserPlayCommand(validChoice, null);
         var result = _validator.TestValidate(command);
@@ -24,7 +24,7 @@ public class UserPlayCommandValidatorTests
     [InlineData(-1)]
     [InlineData(0)]
     [InlineData(999)]
-    public void Should_Have_Validation_Error_For_Invalid_Choice(int invalidChoice)
+    public void Handle_WhenInvalidChoice_ShouldHaveValidationError(int invalidChoice)
     {
         var command = new UserPlayCommand(invalidChoice, null);
         var result = _validator.TestValidate(command);

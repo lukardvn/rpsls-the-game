@@ -23,7 +23,7 @@ public class ScoreboardRepositoryTests : IDisposable
     public void Dispose() => _dbContext.Dispose();
 
     [Fact]
-    public async Task AddResult_AddsRecordToDb()
+    public async Task AddResult_ShouldAddRecordToDb()
     {
         await _repository.AddResult("user1", Choice.Rock, Choice.Paper, Outcome.Lose);
 
@@ -35,7 +35,7 @@ public class ScoreboardRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetRecentResults_ReturnsRecentRecords()
+    public async Task GetRecentResults_ShouldReturnRecentRecords()
     {
         // Arrange
         for (var i = 0; i <= 15; i++)
@@ -63,7 +63,7 @@ public class ScoreboardRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task ResetScoreboard_MovesResultsToArchive_AndRemovesFromResults()
+    public async Task ResetScoreboard_ShouldMoveResultsToArchiveAndRemoveFromResults()
     {
         // Arrange
         _dbContext.Results.Add(new GameResult

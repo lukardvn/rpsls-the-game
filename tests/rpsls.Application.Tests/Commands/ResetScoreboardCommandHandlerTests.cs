@@ -16,7 +16,7 @@ public class ResetScoreboardCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_CallsResetScoreboardOnce()
+    public async Task Handle_ShouldResetScoreboardOnce()
     {
         // Arrange
         var command = new ResetScoreboardCommand();
