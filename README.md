@@ -51,14 +51,14 @@ cd rpsls-the-game
 
    ```
    "ConnectionStrings": {
-     "DefaultConnection": "Host=localhost;Port=5432;Database=bbt_game;Username=postgres;Password=yourpassword"
+     "DefaultConnection": "Host=localhost;Port=5432;Database=rpslsDb;Username=postgres;Password=yourpassword"
    }
    ```
 
 2. Apply migrations:
 
    ```
-   dotnet ef database update
+    dotnet ef database update --project src/rpsls.Infrastructure --startup-project src/rpsls.Api
    ```
 
 3. Run the API:
