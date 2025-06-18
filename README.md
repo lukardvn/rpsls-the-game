@@ -6,9 +6,9 @@ Following Clean Architecture and built with **.NET Core** and **PostgreSQL**, an
 ## 🚀 Features
 
 - Play matches against computer using extended [Rock-Paper-Scissors rules](https://www.samkass.com/theories/RPSSL.html)
-- Fetch past game history
-- Track player leaderboard
-- Reset player leaderboard
+- Track scores per player
+- Reset all the scores
+- See the leaderboard: Best players with most Ws
 - RESTful design
 - Docker support for easy local or cloud deployment
 
