@@ -1,4 +1,3 @@
-using System.Xml.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using rpsls.Infrastructure.Database;
@@ -24,7 +23,7 @@ public static class Configuration
             .UseSnakeCaseNamingConvention()
         );
 
-        // This allows you to inject the interface elsewhere instead of the concrete DbContext
+        //to inject the interface elsewhere instead of the concrete DbContext
         //services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
     }
 

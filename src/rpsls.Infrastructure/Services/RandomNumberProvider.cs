@@ -5,15 +5,21 @@ using rpsls.Infrastructure.DTOs;
 
 namespace rpsls.Infrastructure.Services;
 
+/// <summary>
+/// Service that gets random number from external service. If it's not successful, then it generates the random number by itself.
+/// </summary>
+/// <param name="httpClient"></param>
+/// <param name="logger"></param>
 public class RandomNumberProvider(HttpClient httpClient, ILogger<RandomNumberProvider> logger) : IRandomNumberProvider
 {
-    private const string BaseUrl = "https://codechallenge.boohma.com/random";
-
     public async Task<int> GetRandomNumber(CancellationToken ct = default)
     {
+        const string endpoint = "random";
+        
         try
         {
-            var response = await httpClient.GetFromJsonAsync<RandomNumberResponse>(BaseUrl, ct);
+            
+            var response = await httpClient.GetFromJsonAsync<RandomNumberResponse>(endpoint, ct);
 
             if (response?.RandomNumber is >= 1 and <= 100)
             {

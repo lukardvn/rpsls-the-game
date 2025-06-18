@@ -2,7 +2,14 @@ using FluentValidation;
 
 namespace rpsls.Application.Queries;
 
-//TODO: currently won't be triggered because of the custom Behavior that specifies Validation only to ICommand
+/// <summary>
+/// Currently, this validator won't be triggered because of the custom behavior that specifies validation only to ICommand.
+///
+/// If we wanted to trigger this one as well
+/// 1. Remove the ICommand constraint from the behavior
+/// or
+/// 2. Introduce separate ValidationBehaviour for queries 
+/// </summary>
 public class ScoreboardQueryValidator : AbstractValidator<ScoreboardQuery>
 {
     public ScoreboardQueryValidator()

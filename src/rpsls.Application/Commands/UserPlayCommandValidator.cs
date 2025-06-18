@@ -3,6 +3,7 @@ using rpsls.Domain.Models;
 
 namespace rpsls.Application.Commands;
 
+// Gets triggered by ExceptionMiddleware when this specific command. If it fails, request is passed to ValidationBehavior.
 public class UserPlayCommandValidator: AbstractValidator<UserPlayCommand>
 {
     public UserPlayCommandValidator()

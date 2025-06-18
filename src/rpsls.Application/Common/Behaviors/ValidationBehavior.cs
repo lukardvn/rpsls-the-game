@@ -6,7 +6,12 @@ using ValidationException = rpsls.Application.Common.Exceptions.ValidationExcept
 
 namespace rpsls.Application.Common.Behaviors;
 
-public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : ICommand<TResponse>
+/// <summary>
+/// Ensures that commands are validated before they run - and throws if something is invalid.
+/// </summary>
+/// <typeparam name="TRequest"></typeparam>
+/// <typeparam name="TResponse"></typeparam>
+public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : ICommandBase
 {
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
@@ -28,7 +33,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             .Select(valError => new ValidationError(valError.PropertyName, valError.ErrorMessage))
             .ToList();
 
-        if (errors.Any())
+        if (errors.Count != 0)
             throw new ValidationException(errors);
         
         var response = await next(ct);

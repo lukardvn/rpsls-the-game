@@ -7,6 +7,15 @@ namespace rpsls.Infrastructure.Repositories;
 
 public class ScoreboardRepository(ApplicationDbContext dbContext) : IScoreboardRepository
 {
+    /// <summary>
+    /// Adding result of the game to the database table.
+    /// Only when username was provided. Not saving results with no username.
+    /// </summary>
+    /// <param name="username"></param>
+    /// <param name="playerChoice"></param>
+    /// <param name="computerChoice"></param>
+    /// <param name="outcome"></param>
+    /// <param name="ct"></param>
     public async Task AddResult(string username, Choice playerChoice, Choice computerChoice, Outcome outcome, CancellationToken ct = default)
     {
         var result = new GameResult
@@ -36,6 +45,7 @@ public class ScoreboardRepository(ApplicationDbContext dbContext) : IScoreboardR
     /// Keeping the 'result' table clean in order to avoid additional conditioning and improve performance when fetching data.
     ///
     /// One more alternative way (simpler) would be to introduce a field (IsArchived) that would act as a flag.
+    /// And the obvious way would be to just drop the entire table.
     /// </summary>
     /// <param name="ct"></param>
     public async Task ResetScoreboard(CancellationToken ct = default)

@@ -3,6 +3,11 @@ using rpsls.Application.Common.Exceptions;
 
 namespace rpsls.Api.Middlewares;
 
+/// <summary>
+/// Catches all exceptions and formats them as pretty HTTP error responses.
+/// </summary>
+/// <param name="next"></param>
+/// <param name="logger"></param>
 public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
 {
     public async Task InvokeAsync(HttpContext context)
@@ -35,24 +40,25 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         }
     }
 
+    // Add any of the exception types here if wanted to be handled specifically instead of 500
     private static ExceptionDetails GetExceptionDetails(Exception exception)
     {
         return exception switch
         {
-            ValidationException validationException => new ExceptionDetails(
-                StatusCodes.Status400BadRequest,
-                "ValidationFailure",
-                "Validation error",
-                "One or more validation errors occurred",
-                validationException.Errors
-                ),
-            
-            _ => new ExceptionDetails(
-                StatusCodes.Status500InternalServerError, 
-                "InternalServerError",
-                "Internal Server Error", 
-                "An unexpected error occurred", 
-                null)
+            ValidationException validationException 
+                => new ExceptionDetails(
+                    StatusCodes.Status400BadRequest, 
+                    "ValidationFailure", 
+                    "Validation error", 
+                    "One or more validation errors occurred",
+                        validationException.Errors),
+            _ 
+                => new ExceptionDetails(
+                    StatusCodes.Status500InternalServerError, 
+                    "InternalServerError", 
+                    "Internal Server Error", 
+                    "An unexpected error occurred",
+                    null)
         };
     }
 

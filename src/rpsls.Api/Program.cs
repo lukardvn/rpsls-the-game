@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.RegisterApiServices(builder.Configuration);
 builder.Services.RegisterApplicationServices();
 builder.Services.RegisterDomainServices();
-builder.Services.RegisterInfrastructureServices();
+builder.Services.RegisterInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -29,4 +29,4 @@ app.RegisterGameEndpoints();
 
 app.Run();
 
-public abstract partial class Program { }
+public abstract partial class Program;

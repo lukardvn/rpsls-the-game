@@ -32,19 +32,6 @@ public static class GameEndpoints
         .WithName("GetRandomChoice")
         .Produces<ChoiceDto>();
         
-        //TODO: remove once /user-play is completed
-        group.MapPost("/play", async (PlayRequest request, ISender mediator, CancellationToken ct) =>
-        {
-            var result = await mediator.Send(request.ToPlayCommand(), ct);
-            return Results.Ok(result);
-        })
-        .WithDescription("Play a round against a computer opponent.")
-        .WithName("PlayGame")
-        .Accepts<PlayRequest>("application/json")
-        .Produces<ResultDto>()
-        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
-        .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
-        
         group.MapPost("/user-play", async (UserPlayRequest request, ISender mediator, CancellationToken ct) =>
         {
             var result = await mediator.Send(request.ToPlayCommand(), ct);
@@ -57,7 +44,7 @@ public static class GameEndpoints
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
         
-        group.MapGet("/scoreboard", async (ISender mediator, int count = 10, CancellationToken ct = default) =>
+        group.MapGet("/scoreboard", async (ISender mediator, [FromQuery]int count = 10, CancellationToken ct = default) =>
         {
             var result = await mediator.Send(new ScoreboardQuery(count), ct);
             return Results.Ok(result);
@@ -70,11 +57,16 @@ public static class GameEndpoints
         group.MapPost("/scoreboard/reset", async (ISender mediator) =>
         {
             await mediator.Send(new ResetScoreboardCommand());
-            return Results.Ok("Scoreboard reset successfully.");
+            return Results.NoContent();
         })
         .WithDescription("Reset scoreboard.")
         .WithName("ResetScoreboard")
-        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status204NoContent)
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
+        
+        group.MapGet("/fail", () =>
+        {
+            throw new InvalidOperationException("Something went wrong!");
+        });
     }
 }
