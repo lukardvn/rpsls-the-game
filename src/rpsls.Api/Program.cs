@@ -31,10 +31,35 @@ app.RegisterGameEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
+    await MigrateWithRetryAsync(scope.ServiceProvider);
 }
 
 app.Run();
+return;
+
+async Task MigrateWithRetryAsync(IServiceProvider services, int maxRetries = 5, TimeSpan? delay = null)
+{
+    delay ??= TimeSpan.FromSeconds(5);
+
+    var db = services.GetRequiredService<ApplicationDbContext>();
+
+    for (var attempt = 1; attempt <= maxRetries; attempt++)
+    {
+        try
+        {
+            await db.Database.MigrateAsync();
+            break;
+        }
+        catch (Exception)
+        {
+            if (attempt == maxRetries)
+            {
+                throw;
+            }
+
+            await Task.Delay(delay.Value);
+        }
+    }
+}
 
 public abstract partial class Program;
