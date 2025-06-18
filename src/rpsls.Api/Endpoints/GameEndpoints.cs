@@ -52,7 +52,7 @@ public static class GameEndpoints
             var result = await mediator.Send(new ScoreboardQuery(username, count), ct);
             return Results.Ok(result);
         })
-        .WithDescription("Get scoreboard of user's most recent results.")
+        .WithDescription("Get user's most recent results.")
         .WithName("GetScoreboard")
         .Produces<IEnumerable<ResultWithTimeDto>>()
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
@@ -67,12 +67,12 @@ public static class GameEndpoints
         .Produces(StatusCodes.Status204NoContent)
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
         
-        group.MapGet("/leaderboard", async (ISender mediator, [FromQuery]int count = 3, CancellationToken ct = default) =>
+        group.MapGet("/leaderboard", async (ISender mediator, [FromQuery]int count = 5, CancellationToken ct = default) =>
         {
             var result = await mediator.Send(new LeaderboardQuery(count), ct);
             return Results.Ok(result);
         })
-        .WithDescription("Get leaderboard of the top rated players.")
+        .WithDescription("Get leaderboard - top rated players.")
         .WithName("GetLeaderboard")
         .Produces<IEnumerable<LeaderboardEntryDto>>()
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);

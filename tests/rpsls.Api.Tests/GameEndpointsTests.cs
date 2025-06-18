@@ -103,7 +103,7 @@ public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Pro
         var client = _factory.CreateClient();
 
         // Act
-        var response = await client.PostAsJsonAsync("/game/user-play", playRequest);
+        var response = await client.PostAsJsonAsync("/game/play", playRequest);
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -119,6 +119,7 @@ public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Pro
     public async Task GetScoreboard_ShouldReturnOkWithResults()
     {
         // Arrange
+        const string username = "user1";
         var expectedResults = new List<ResultWithTimeDto>
         {
             new(Choice.Rock, Choice.Paper, Outcome.Lose, DateTime.UtcNow),
@@ -132,7 +133,7 @@ public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Pro
         var client = _factory.CreateClient();
 
         // Act
-        var response = await client.GetAsync("/game/scoreboard");
+        var response = await client.GetAsync($"/game/scoreboard?username={username}");
 
         // Assert
         response.EnsureSuccessStatusCode();
@@ -147,6 +148,7 @@ public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Pro
     {
         // Arrange
         const int count = 5;
+        const string username = "user1";
         var expectedResults = new List<ResultWithTimeDto>
         {
             new(Choice.Rock, Choice.Paper, Outcome.Lose, DateTime.UtcNow)
@@ -159,7 +161,7 @@ public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Pro
         var client = _factory.CreateClient();
 
         // Act
-        var response = await client.GetAsync($"/game/scoreboard?count={count}");
+        var response = await client.GetAsync($"/game/scoreboard?username={username}&count={count}");
 
         // Assert
         response.EnsureSuccessStatusCode();
