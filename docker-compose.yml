@@ -8,7 +8,10 @@ services:
       - ConnectionStrings__Database=Host=postgres;Database=rpslsDb;Username=postgres;Password=postgres
     depends_on:
       - postgres
-
+    command: >
+      sh -c "sleep 10 && 
+             dotnet ef database update --project src/rpsls.Infrastructure --startup-project src/rpsls.Api --no-build && 
+             dotnet rpsls.Api.dll"
   postgres:
     image: postgres:15
     restart: always

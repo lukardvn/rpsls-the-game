@@ -18,7 +18,6 @@ public class RandomNumberProvider(HttpClient httpClient, ILogger<RandomNumberPro
         
         try
         {
-            
             var response = await httpClient.GetFromJsonAsync<RandomNumberResponse>(endpoint, ct);
 
             if (response?.RandomNumber is >= 1 and <= 100)
@@ -27,7 +26,7 @@ public class RandomNumberProvider(HttpClient httpClient, ILogger<RandomNumberPro
                 return response.RandomNumber;
             }
 
-            logger.LogWarning("Received invalid or null random number from API. Falling back to local random generator.");
+            logger.LogWarning("Received invalid response from CodeChallenge API. Falling back to local random generator.");
         }
         catch (Exception ex)
         {

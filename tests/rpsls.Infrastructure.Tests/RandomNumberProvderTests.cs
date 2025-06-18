@@ -1,8 +1,10 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
+using rpsls.Application.Interfaces;
 using rpsls.Infrastructure.DTOs;
 using rpsls.Infrastructure.Services;
 
@@ -90,12 +92,58 @@ public class RandomNumberProviderTests
                 LogLevel.Warning,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((v, t) => 
-                    v.ToString()!.Contains("invalid or null random number", StringComparison.OrdinalIgnoreCase)),
+                    v.ToString()!.Contains("invalid response", StringComparison.OrdinalIgnoreCase)),
                 null,
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()),
             Times.AtLeastOnce);
     }
+    
+    /// <summary>
+    /// Polly re-try test
+    /// </summary>
+    [Fact]
+    public async Task GetRandomNumber_ShouldRetryOnTransientError_AndReturnValue()
+    {
+        // Arrange
+        var mockHandler = new Mock<HttpMessageHandler>();
 
+        mockHandler.Protected()
+            .SetupSequence<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.ServiceUnavailable })
+            .ReturnsAsync(new HttpResponseMessage { StatusCode = HttpStatusCode.ServiceUnavailable })
+            .ReturnsAsync(new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                Content = JsonContent.Create(new RandomNumberResponse(33))
+            });
+
+        var services = new ServiceCollection();
+
+        services.AddLogging();
+        services.AddHttpClient<IRandomNumberProvider, RandomNumberProvider>()
+            .ConfigureHttpClient(client => client.BaseAddress = new Uri("https://api.com/random"))
+            .ConfigurePrimaryHttpMessageHandler(() => mockHandler.Object)
+            .AddPolicyHandler((provider, request) =>
+            {
+                var logger = provider.GetRequiredService<ILogger<RandomNumberProvider>>();
+                return Configuration.GetRetryPolicy(logger);
+            });
+
+        var serviceProvider = services.BuildServiceProvider();
+        var service = serviceProvider.GetRequiredService<IRandomNumberProvider>();
+
+        // Act
+        var result = await service.GetRandomNumber();
+
+        // Assert
+        Assert.Equal(33, result);
+
+        mockHandler.Protected().Verify(
+            "SendAsync",
+            Times.Exactly(3),
+            ItExpr.IsAny<HttpRequestMessage>(),
+            ItExpr.IsAny<CancellationToken>());
+    }
     
     private RandomNumberProvider CreateService(HttpClient httpClient) => new(httpClient, _loggerMock.Object);
 
@@ -130,4 +178,6 @@ public class RandomNumberProviderTests
 
         return new HttpClient(handlerMock.Object);
     }
+    
+    
 }

@@ -1,5 +1,4 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0-bookworm-slim AS build
-
 WORKDIR /src
 
 # Copy project files and restore dependencies
@@ -14,12 +13,16 @@ COPY ./src ./
 WORKDIR /src/rpsls.Api
 RUN dotnet publish -c Release -o /out
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-bookworm-slim AS runtime
-
+FROM mcr.microsoft.com/dotnet/sdk:9.0-bookworm-slim AS runtime
 WORKDIR /app
 
+# Install EF Core tools
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+
 COPY --from=build /out ./
+# Copy source code for migrations
+COPY ./src ./src
 
 EXPOSE 8080
-
 ENTRYPOINT ["dotnet", "rpsls.Api.dll"]

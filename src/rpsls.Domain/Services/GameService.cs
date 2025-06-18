@@ -36,11 +36,11 @@ public class GameService(ILogger<GameService> logger) : IGameService
         if (player == computer)
             return Task.FromResult(Outcome.Tie);
 
-        var outcome = Task.FromResult(_winningRules[player].Contains(computer) 
+        var outcome = _winningRules[player].Contains(computer) 
             ? Outcome.Win 
-            : Outcome.Lose);
+            : Outcome.Lose;
 
-        switch (outcome.Result)
+        switch (outcome)
         {
             case Outcome.Win:
                 logger.LogInformation("Player won against the computer.");
@@ -50,10 +50,9 @@ public class GameService(ILogger<GameService> logger) : IGameService
                 break;
             case Outcome.Tie:
             default:
-                logger.LogInformation("Player and computer played the same hand.");
-                break;
+                throw new InvalidOperationException($"Unexpected outcome: {outcome}");
         }
         
-        return outcome;
+        return Task.FromResult(outcome);
     }
 }
