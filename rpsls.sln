@@ -12,11 +12,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B2380C6F-46F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F8E46952-99EF-442F-94A0-17E0F5200688}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rpsls.Domain.Tests", "rpsls.Domain.Tests\rpsls.Domain.Tests.csproj", "{F61A334E-7447-4F7E-BB99-6758E24CDC26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rpsls.Domain.Tests", "tests\rpsls.Domain.Tests\rpsls.Domain.Tests.csproj", "{F61A334E-7447-4F7E-BB99-6758E24CDC26}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rpsls.Infrastructure.Tests", "rpsls.Infrastructure.Tests\rpsls.Infrastructure.Tests.csproj", "{464266F6-2D37-4A85-81D0-3A38A8EB816B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rpsls.Infrastructure.Tests", "tests\rpsls.Infrastructure.Tests\rpsls.Infrastructure.Tests.csproj", "{464266F6-2D37-4A85-81D0-3A38A8EB816B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rpsls.Api.Tests", "rpsls.Api.Tests\rpsls.Api.Tests.csproj", "{8F62388A-3612-45A3-9DC4-FEE137932063}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rpsls.Api.Tests", "tests\rpsls.Api.Tests\rpsls.Api.Tests.csproj", "{8F62388A-3612-45A3-9DC4-FEE137932063}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rpsls.Application.Tests", "tests\rpsls.Application.Tests\rpsls.Application.Tests.csproj", "{91B8E414-12FA-4D07-A1B0-2592F871D4EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -124,6 +126,18 @@ Global
 		{8F62388A-3612-45A3-9DC4-FEE137932063}.Release|x64.Build.0 = Release|Any CPU
 		{8F62388A-3612-45A3-9DC4-FEE137932063}.Release|x86.ActiveCfg = Release|Any CPU
 		{8F62388A-3612-45A3-9DC4-FEE137932063}.Release|x86.Build.0 = Release|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Debug|x64.Build.0 = Debug|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Debug|x86.Build.0 = Debug|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Release|x64.ActiveCfg = Release|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Release|x64.Build.0 = Release|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Release|x86.ActiveCfg = Release|Any CPU
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -136,5 +150,6 @@ Global
 		{F61A334E-7447-4F7E-BB99-6758E24CDC26} = {F8E46952-99EF-442F-94A0-17E0F5200688}
 		{464266F6-2D37-4A85-81D0-3A38A8EB816B} = {F8E46952-99EF-442F-94A0-17E0F5200688}
 		{8F62388A-3612-45A3-9DC4-FEE137932063} = {F8E46952-99EF-442F-94A0-17E0F5200688}
+		{91B8E414-12FA-4D07-A1B0-2592F871D4EB} = {F8E46952-99EF-442F-94A0-17E0F5200688}
 	EndGlobalSection
 EndGlobal

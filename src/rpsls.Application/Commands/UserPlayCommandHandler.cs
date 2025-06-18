@@ -7,9 +7,9 @@ using rpsls.Domain.Models;
 namespace rpsls.Application.Commands;
 
 public class UserPlayCommandHandler(IGameService gameService, IRandomNumberProvider rnProvider, IScoreboardRepository scoreboardRepo)
-    : IRequestHandler<UserPlayCommand, ResultWithTimeDto>
+    : IRequestHandler<UserPlayCommand, ResultDto>
 {
-    public async Task<ResultWithTimeDto> Handle(UserPlayCommand request, CancellationToken ct)
+    public async Task<ResultDto> Handle(UserPlayCommand request, CancellationToken ct)
     {
         var playerChoice = (Choice)request.Choice;
 
@@ -21,12 +21,10 @@ public class UserPlayCommandHandler(IGameService gameService, IRandomNumberProvi
         if (!string.IsNullOrWhiteSpace(request.Username))   // username was provided, save result to database
             await scoreboardRepo.AddResult(request.Username, playerChoice, computerChoice, outcome, ct);
 
-        //TODO: see what to do with played_at
-        return new ResultWithTimeDto(
+        return new ResultDto(
             playerChoice,
             computerChoice,
-            outcome,
-            null
+            outcome
         );
     }
 }
