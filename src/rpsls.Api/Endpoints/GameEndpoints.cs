@@ -62,7 +62,7 @@ public static class GameEndpoints
             await mediator.Send(new ResetScoreboardCommand());
             return Results.NoContent();
         })
-        .WithDescription("Reset scoreboard.")
+        .WithDescription("Reset all results for all users.")
         .WithName("ResetScoreboard")
         .Produces(StatusCodes.Status204NoContent)
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
@@ -72,9 +72,11 @@ public static class GameEndpoints
             var result = await mediator.Send(new LeaderboardQuery(count), ct);
             return Results.Ok(result);
         })
-        .WithDescription("Get leaderboard - top rated players.")
+        .WithDescription("Get leaderboard - top rated players (with the most Ws).")
         .WithName("GetLeaderboard")
         .Produces<IEnumerable<LeaderboardEntryDto>>()
         .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError);
+        
+        //in case wanted see the archived results as well, we would add an endpoint
     }
 }

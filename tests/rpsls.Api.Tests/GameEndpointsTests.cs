@@ -11,7 +11,6 @@ using rpsls.Domain.Models;
 
 namespace rpsls.Api.Tests;
 
-//TODO: more tests
 public sealed class GameEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
