@@ -31,13 +31,15 @@ app.RegisterGameEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {
-    await MigrateWithRetryAsync(scope.ServiceProvider);
+    await MigrateDbWithRetry(scope.ServiceProvider);
 }
 
 app.Run();
 return;
 
-async Task MigrateWithRetryAsync(IServiceProvider services, int maxRetries = 5, TimeSpan? delay = null)
+//had to add retry because of the dockerization
+//api would spin up and the database wouldn't yet be ready so migrations wouldn't apply which would cause exceptions
+async Task MigrateDbWithRetry(IServiceProvider services, int maxRetries = 5, TimeSpan? delay = null)
 {
     delay ??= TimeSpan.FromSeconds(5);
 
